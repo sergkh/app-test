@@ -1,0 +1,33 @@
+name: Perform automatic release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: Version to release
+        required: false
+env:
+  GITHUB_TOKEN: ${{ github.token }}
+jobs:
+  main:
+    name: Run release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Generate GitHub App token
+      uses: electron/github-app-auth-action@v1.1.1
+      id: generate-token
+      with:
+        creds: ${{ secrets.GH_APP_CREDS }}
+    - name: Checkout
+      id: checkout
+      uses: actions/checkout@v4.1.1
+    - name: Stage changes
+      run: |
+        echo 'Hello World' > hello-world.txt
+        git add hello-world.txt
+    - name: Commit
+      uses: dsanders11/github-app-commit-action@v1
+      with:
+        message: 'feat: my changes'
+        token: ${{ steps.generate-token.outputs.token }}
