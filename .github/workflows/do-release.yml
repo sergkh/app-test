@@ -31,8 +31,10 @@ jobs:
       with:
         message: 'feat: my changes'
         token: ${{ steps.generate-token.outputs.token }}
-    - name: Bump version and push tag
-      uses: laputansoft/github-tag-action@v4.6
+    - name: Create a Release
+      uses: elgohr/Github-Release-Action@v5
+      env:
+        GH_TOKEN: ${{ steps.generate-token.outputs.token }}
       with:
-        github_token: ${{ env.github-token }}
-        tag: ${{ inputs.version }}        
+        title: MyReleaseMessage
+        tag: v${{ inputs.version }}
