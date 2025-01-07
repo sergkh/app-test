@@ -42,7 +42,7 @@ jobs:
       with:
         title: Release ${{ inputs.version }}
         tag: v${{ inputs.version }}
-    - name: Set release version
+    - name: Set next dev version
       run: |
         echo 'ThisBuild / version := ${{ inputs.next_version }}' > version.sbt
         git add version.sbt
@@ -51,3 +51,4 @@ jobs:
       with:
         message: 'Setting version to ${{ inputs.next_version }}'
         token: ${{ steps.generate-token.outputs.token }}
+        force: true
