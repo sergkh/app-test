@@ -6,7 +6,11 @@ on:
       version:
         type: string
         description: Version to release
-        required: false
+        required: true
+      next_version:
+        type: string
+        description: Next version to set for the project
+        required: true        
 env:
   GITHUB_TOKEN: ${{ github.token }}
 jobs:
@@ -22,19 +26,28 @@ jobs:
     - name: Checkout
       id: checkout
       uses: actions/checkout@v4.1.1
-    - name: Stage changes
+    - name: Set release version
       run: |
-        echo '${{ inputs.version }}' > version.sbt
+        echo 'ThisBuild / version := ${{ inputs.version }}' > version.sbt
         git add version.sbt
-    - name: Commit
+    - name: Commit release version
       uses: dsanders11/github-app-commit-action@v1
       with:
-        message: 'feat: my changes'
+        message: 'Setting version to ${{ inputs.version }}'
         token: ${{ steps.generate-token.outputs.token }}
     - name: Create a Release
       uses: elgohr/Github-Release-Action@v5
       env:
         GH_TOKEN: ${{ steps.generate-token.outputs.token }}
       with:
-        title: MyReleaseMessage
+        title: Release ${{ inputs.version }}
         tag: v${{ inputs.version }}
+    - name: Set release version
+      run: |
+        echo 'ThisBuild / version := ${{ inputs.next_version }}' > version.sbt
+        git add version.sbt
+    - name: Commit next version
+      uses: dsanders11/github-app-commit-action@v1
+      with:
+        message: 'Setting version to ${{ inputs.next_version }}'
+        token: ${{ steps.generate-token.outputs.token }}
